@@ -1,0 +1,41 @@
+# Node
+node_modules/
+**/node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+package-lock.json
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Vite / build
+dist/
+apps/web/dist/
+
+# Nest / TypeScript
+*.tsbuildinfo
+coverage/
+
+# Flutter
+**/build/
+**/.dart_tool/
+**/.pub-cache/
+**/.packages
+.pub/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+*.iml
+
+# Docker
+infra/docker/dev/mysql_data/
+
+# Misc
+*.log
