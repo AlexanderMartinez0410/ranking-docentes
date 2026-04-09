@@ -8,13 +8,13 @@ import { GetTagUseCase } from '../../application/use-cases/tags/get-tag.usecase'
 import { ListTagsUseCase } from '../../application/use-cases/tags/list-tags.usecase';
 import { UpdateTagUseCase } from '../../application/use-cases/tags/update-tag.usecase';
 import { PrismaTagsRepository } from '../../infrastructure/repositories/tags/prisma-tags.repository';
-import { PrismaService } from '../../infrastructure/database/prisma.service';
+import { DatabaseModule } from '../../infrastructure/database/database.module';
 import { TAGS_REPOSITORY } from '../../infrastructure/repositories/tags/tags.repository';
 
 @Module({
+  imports: [DatabaseModule],
   controllers: [TagsController],
   providers: [
-    PrismaService,
     CreateTagUseCase,
     ListTagsUseCase,
     GetTagUseCase,

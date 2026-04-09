@@ -12,4 +12,10 @@ export class UpdateTeacherDto {
 
   @ApiPropertyOptional({ example: true })
   is_active?: boolean;
+
+  @ApiPropertyOptional({ example: '/uploads/1681234-123.png' })
+  attachmentUrl?: string;
+
+  @ApiPropertyOptional({ example: 'image' })
+  attachmentType?: string;
 }

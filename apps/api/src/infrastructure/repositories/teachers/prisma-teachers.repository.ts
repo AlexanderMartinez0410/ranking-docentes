@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
+import { unlink } from 'fs/promises';
+import { join } from 'path';
 import type { TeachersRepository } from './teachers.repository';
 import type { CreateTeacherDto } from '../../../application/dto/teachers/create-teacher.dto';
 import type { UpdateTeacherDto } from '../../../application/dto/teachers/update-teacher.dto';
@@ -18,10 +20,17 @@ export class PrismaTeachersRepository implements TeachersRepository {
       },
     });
 
+    // handle attachment if provided by URL
+    let attachmentId = dto.id_attachments ?? null;
+    if (dto.attachmentUrl) {
+      const att = await this.prisma.attachments.create({ data: { type: dto.attachmentType ?? 'file', path: dto.attachmentUrl } });
+      attachmentId = att.id_attachments;
+    }
+
     const teacher = await this.prisma.teachers.create({
       data: {
         id_person: person.id_person,
-        id_attachments: dto.id_attachments ?? null,
+        id_attachments: attachmentId,
         is_active: dto.is_active ?? true,
       },
       include: { person: true, attachment: true },
@@ -50,10 +59,36 @@ export class PrismaTeachersRepository implements TeachersRepository {
       await this.prisma.person.update({ where: { id_person: teacher.id_person }, data: { name: dto.name ?? undefined, last_name: dto.last_name ?? undefined } });
     }
 
+    // handle attachment update if provided by URL
+    let newAttachmentId = dto.id_attachments ?? teacher.id_attachments;
+    if (dto.attachmentUrl) {
+      if (teacher.id_attachments) {
+        // update existing attachment record
+        // attempt to remove old file from disk if exists
+        try {
+          const existing = await this.prisma.attachments.findUnique({ where: { id_attachments: teacher.id_attachments } });
+          if (existing && existing.path) {
+            // existing.path expected like '/uploads/<file>'
+            const relative = existing.path.replace(/^\//, '');
+            const filePath = join(process.cwd(), 'public', relative);
+            await unlink(filePath).catch(() => {});
+          }
+        } catch (e) {
+          // ignore file deletion errors
+        }
+
+        await this.prisma.attachments.update({ where: { id_attachments: teacher.id_attachments }, data: { path: dto.attachmentUrl, type: dto.attachmentType ?? 'file' } });
+        newAttachmentId = teacher.id_attachments;
+      } else {
+        const att = await this.prisma.attachments.create({ data: { type: dto.attachmentType ?? 'file', path: dto.attachmentUrl } });
+        newAttachmentId = att.id_attachments;
+      }
+    }
+
     const updated = await this.prisma.teachers.update({
       where: { id_teachers: id },
       data: {
-        id_attachments: dto.id_attachments ?? teacher.id_attachments,
+        id_attachments: newAttachmentId,
         is_active: dto.is_active ?? teacher.is_active,
       },
       include: { person: true, attachment: true },

@@ -19,6 +19,7 @@ model person {
   last_name String
 
   teacher   teachers?
+  user      users?
 }
 
 model attachments {
@@ -27,6 +28,7 @@ model attachments {
   path           String
 
   teacher        teachers[]
+  users          users[]
 }
 
 model teachers {
@@ -37,4 +39,54 @@ model teachers {
 
   person        person       @relation(fields: [id_person], references: [id_person])
   attachment    attachments? @relation(fields: [id_attachments], references: [id_attachments])
+  reviews       reviews[]
+}
+
+model periods {
+  id_periods Int     @id @default(autoincrement())
+  name       String  @db.VarChar(50)
+  is_active  Boolean @default(true)
+
+  reviews    reviews[]
+}
+
+model roles {
+  id_rol Int    @id @default(autoincrement())
+  name   String @db.VarChar(50)
+
+  users  users[]
+}
+
+model users {
+  id_users      Int     @id @default(autoincrement())
+  username      String  @unique
+  password_hash String
+  is_active     Boolean @default(true)
+  id_person     Int     @unique
+  id_attachments Int?
+  id_rol        Int?
+  password_reset_token String?
+  password_reset_expires DateTime?
+
+  person        person       @relation(fields: [id_person], references: [id_person])
+  attachment    attachments? @relation(fields: [id_attachments], references: [id_attachments])
+  role          roles?       @relation(fields: [id_rol], references: [id_rol])
+  reviews       reviews[]
+}
+
+model reviews {
+  id_reviews   Int      @id @default(autoincrement())
+  valuation    Decimal  @db.Decimal(4,2)
+  opinion      String   @db.VarChar(255)
+  is_anonimys  Boolean  @default(false)
+
+  id_user      Int
+  id_teacher   Int
+  id_periods   Int
+
+  user     users    @relation(fields: [id_user], references: [id_users])
+  teacher  teachers @relation(fields: [id_teacher], references: [id_teachers])
+  period   periods  @relation(fields: [id_periods], references: [id_periods])
+
+  @@unique([id_user, id_teacher, id_periods])
 }

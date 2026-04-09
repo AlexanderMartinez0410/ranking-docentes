@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { DatabaseModule } from '../../infrastructure/database/database.module';
 import { TeachersController } from '../../interfaces/controllers/teachers.controller';
 import { CreateTeacherUseCase } from '../../application/use-cases/teachers/create-teacher.usecase';
 import { ListTeachersUseCase } from '../../application/use-cases/teachers/list-teachers.usecase';
@@ -7,11 +8,11 @@ import { UpdateTeacherUseCase } from '../../application/use-cases/teachers/updat
 import { DeleteTeacherUseCase } from '../../application/use-cases/teachers/delete-teacher.usecase';
 import { EnableTeacherUseCase } from '../../application/use-cases/teachers/enable-teacher.usecase';
 import { DisableTeacherUseCase } from '../../application/use-cases/teachers/disable-teacher.usecase';
-import { InMemoryTeachersRepository } from '../../infrastructure/repositories/teachers/in-memory-teachers.repository';
 import { PrismaTeachersRepository } from '../../infrastructure/repositories/teachers/prisma-teachers.repository';
 import { TEACHERS_REPOSITORY } from '../../infrastructure/repositories/teachers/teachers.repository';
 
 @Module({
+  imports: [DatabaseModule],
   controllers: [TeachersController],
   providers: [
     CreateTeacherUseCase,
@@ -21,12 +22,10 @@ import { TEACHERS_REPOSITORY } from '../../infrastructure/repositories/teachers/
     DeleteTeacherUseCase,
     EnableTeacherUseCase,
     DisableTeacherUseCase,
-    // cambiar a PrismaTeachersRepository cuando quieras persistencia real
-    InMemoryTeachersRepository,
     PrismaTeachersRepository,
     {
       provide: TEACHERS_REPOSITORY,
-      useExisting: InMemoryTeachersRepository,
+      useExisting: PrismaTeachersRepository,
     },
   ],
 })
