@@ -1,0 +1,40 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model tags {
+  id_tags    Int     @id @default(autoincrement())
+  name       String
+  is_active Boolean @default(true)
+}
+
+model person {
+  id_person Int     @id @default(autoincrement())
+  name      String
+  last_name String
+
+  teacher   teachers?
+}
+
+model attachments {
+  id_attachments Int    @id @default(autoincrement())
+  type           String
+  path           String
+
+  teacher        teachers[]
+}
+
+model teachers {
+  id_teachers   Int          @id @default(autoincrement())
+  id_attachments Int?
+  is_active     Boolean
+  id_person      Int          @unique
+
+  person        person       @relation(fields: [id_person], references: [id_person])
+  attachment    attachments? @relation(fields: [id_attachments], references: [id_attachments])
+}
