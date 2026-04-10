@@ -88,3 +88,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_bloc: ^8.0.0
+  ranking_docentes:
+    path: lib
