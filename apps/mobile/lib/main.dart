@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'presentation/pages/home_page.dart';
+import 'package:app/ui/theme/design_tokens.dart';
+import 'package:app/features/auth/presentation/pages/welcome_page.dart';
 
 void main() {
   runApp(const RankingDocentesApp());
@@ -12,11 +13,8 @@ class RankingDocentesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Ranking Docentes',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-        useMaterial3: true,
-      ),
-      home: const HomePage(),
+      theme: buildAppTheme(),
+      home: const WelcomePage(),
     );
   }
 }

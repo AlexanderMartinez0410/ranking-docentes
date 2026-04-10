@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ranking_docentes/features/auth/domain/entities/user.dart';
-import 'package:ranking_docentes/features/auth/domain/usecases/login_user.dart';
+import 'package:app/features/auth/domain/entities/user.dart';
+import 'package:app/features/auth/domain/usecases/login_user.dart';
+import 'package:app/core/network/api_exception.dart';
 
 // Events
 abstract class AuthEvent {}
@@ -42,7 +43,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final user = await loginUser(event.username, event.password);
         emit(AuthAuthenticated(user));
       } catch (e) {
-        emit(AuthError(e.toString()));
+        if (e is ApiException) {
+          emit(AuthError(e.message));
+        } else {
+          emit(AuthError('Ocurrió un error inesperado'));
+        }
       }
     });
   }

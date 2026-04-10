@@ -186,6 +186,41 @@ Cuando el usuario pida un nuevo feature con DB/Swagger, seguir pasos y **pregunt
 4) **Use-cases y Controllers**: crear endpoints y preguntar: “¿Agrego al módulo y Swagger?”
 5) **Swagger**: verificar `/docs` y preguntar: “¿Probamos endpoints?”
 
+# Después de cambiar `schema.prisma`
+
+Si añades o actualizas modelos en `apps/api/prisma/schema.prisma`, sigue estos pasos para evitar errores de tipos y que el cliente Prisma refleje los cambios:
+
+1. Regenera el cliente Prisma:
+
+```bash
+cd apps/api
+npx prisma generate
+```
+
+2. (Opcional, en desarrollo) crea y aplica una migración:
+
+```bash
+npx prisma migrate dev --name add_new_model
+```
+
+3. Reinicia el servidor de desarrollo de Nest (si está corriendo en watch):
+
+```bash
+cd apps/api
+npm run start:dev
+```
+
+4. Reinicia el servidor de TypeScript en tu editor: en VS Code usa la paleta → "TypeScript: Restart TS Server". Esto asegura que los tipos nuevos de `PrismaClient` estén disponibles.
+
+5. Solución temporal si aún obtienes errores de tipos (no recomendada para producción):
+
+```ts
+// evita error TS referenciando la nueva propiedad del cliente
+(this.prisma as any).newModel.findMany()
+```
+
+Esta casteo es solo un parche hasta que el cliente Prisma y el servidor TS estén sincronizados — siempre preferible regenerar y reiniciar.
+
 
 ---
 

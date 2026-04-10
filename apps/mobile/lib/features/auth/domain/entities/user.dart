@@ -1,4 +1,4 @@
-import 'package:ranking_docentes/features/auth/data/models/login_response.dart';
+import 'package:app/features/auth/data/models/login_response.dart';
 
 class User {
   final int id;

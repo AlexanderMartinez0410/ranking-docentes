@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ranking_docentes/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:app/core/config/app_config.dart';
+import 'package:app/core/storage/auth_storage.dart';
+import 'package:app/features/auth/data/datasources/auth_api_datasource.dart';
+import 'package:app/features/auth/data/repositories/auth_repository.dart';
+import 'package:app/features/auth/domain/usecases/login_user.dart';
+import 'package:app/features/auth/presentation/bloc/auth_bloc.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -12,7 +17,16 @@ class LoginPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BlocProvider(
-          create: (context) => AuthBloc(), // Asegúrate de proporcionar el AuthBloc correctamente
+          create: (context) => AuthBloc(
+            LoginUser(
+              AuthRepository(
+                AuthApiDatasource(
+                      apiClient,
+                      AuthStorage(),
+                    ),
+              ),
+            ),
+          ),
           child: LoginForm(),
         ),
       ),
